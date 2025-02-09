@@ -1,0 +1,263 @@
+/* ===============================
+   Reset e estilos globais
+   =============================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* ===============================
+   Header
+   =============================== */
+header {
+  background: linear-gradient(90deg, #0052cc, #003d99);
+  color: #fff;
+  padding: 1.5em 1em;
+  text-align: center;
+}
+
+/* ===============================
+   Navegação (Tabs)
+   =============================== */
+.nav-tabs, .nav-tabs-course {
+  display: flex;
+  background: #fff;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 1em;
+}
+
+.nav-tabs button, .nav-tabs-course button {
+  flex: 1;
+  padding: 1em;
+  background: #eee;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s, border-bottom 0.3s;
+}
+
+.nav-tabs button.active, .nav-tabs-course button.active {
+  background: #fff;
+  border-bottom: 3px solid #0052cc;
+  font-weight: bold;
+}
+
+/* ===============================
+   Containers e Layout
+   =============================== */
+.container {
+  max-width: 800px;
+  margin: 1em auto;
+  padding: 0 1em;
+}
+
+/* ===============================
+   Cartões (Cards)
+   =============================== */
+.card {
+  background: #fff;
+  padding: 1.5em;
+  margin-bottom: 1.5em;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.01);
+}
+
+/* ===============================
+   Botões
+   =============================== */
+.button {
+  display: inline-block;
+  background: #0052cc;
+  color: #fff;
+  padding: 0.75em 1.5em;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+  text-decoration: none;
+  margin: 0.5em 0;
+}
+
+.button:hover {
+  background: #003d99;
+}
+
+/* ===============================
+   Formulários
+   =============================== */
+.input-field, select, input[type="date"], input[type="number"] {
+  width: 100%;
+  padding: 0.75em;
+  margin: 0.5em 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* ===============================
+   Listas
+   =============================== */
+ul.list-group {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul.list-group li {
+  padding: 1em;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+ul.list-group li:last-child {
+  border-bottom: none;
+}
+
+/* ===============================
+   Alertas
+   =============================== */
+.alert {
+  padding: 1em;
+  background: #dff0d8;
+  color: #3c763d;
+  border-radius: 4px;
+  margin: 1em 0;
+  text-align: center;
+}
+
+/* ===============================
+   Calendário
+   =============================== */
+.calendar, #adminCalendar {
+  margin: 1em 0;
+  overflow-x: auto;
+}
+
+.calendar-header, .admin-calendar-header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.calendar-nav {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.calendar-nav button {
+  background: #0052cc;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.calendar-nav button:hover {
+  background: #003d99;
+}
+
+.calendar table, #adminCalendar table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.calendar th, .calendar td, #adminCalendar th, #adminCalendar td {
+  border: 1px solid #ccc;
+  width: 14.28%;
+  height: 80px;
+  text-align: center;
+  vertical-align: top;
+  padding: 4px;
+}
+
+.calendar th, #adminCalendar th {
+  background: #f0f0f0;
+}
+
+#adminCalendar td.today {
+  background-color: #e6f7ff;
+  border: 2px solid #0052cc;
+}
+
+/* ===============================
+   Sidebar
+   =============================== */
+.admin-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100%;
+  background: #fff;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+  padding: 1em;
+  z-index: 1000;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.admin-sidebar.active {
+  transform: translateX(0);
+}
+
+.admin-sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 900;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.admin-sidebar-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ===============================
+   Sheet do Admin
+   =============================== */
+.admin-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+  padding: 1em;
+  z-index: 1500;
+  transform: translateY(100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.admin-sheet.active {
+  transform: translateY(0);
+}
+
+/* ===============================
+   Elementos adicionais
+   =============================== */
+.hidden {
+  display: none;
+}
