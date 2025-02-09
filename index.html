@@ -1,1225 +1,292 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Protótipo Melhorado - Presenças, Diário e Dashboard</title>
-  <!-- Importando fonte do Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
-  <!-- Importando Chart.js para os gráficos -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    /* Reset e estilos globais */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #f5f5f5;
-      color: #333;
-      line-height: 1.6;
-    }
-    header {
-      background: linear-gradient(90deg, #0052cc, #003d99);
-      color: #fff;
-      padding: 1.5em 1em;
-      text-align: center;
-    }
-    /* Nav Tabs para alternar entre App Aluno e Painel Administrativo */
-    .nav-tabs {
-      display: flex;
-      background: #fff;
-      border-bottom: 1px solid #ccc;
-    }
-    .nav-tabs button {
-      flex: 1;
-      padding: 1em;
-      background: #eee;
-      border: none;
-      cursor: pointer;
-      transition: background 0.3s, border-bottom 0.3s;
-    }
-    .nav-tabs button.active {
-      background: #fff;
-      border-bottom: 3px solid #0052cc;
-      font-weight: bold;
-    }
-    /* Abas internas do dashboard de curso */
-    .nav-tabs-course {
-      display: flex;
-      border-bottom: 1px solid #ccc;
-      margin-bottom: 1em;
-    }
-    .nav-tabs-course button {
-      flex: 1;
-      padding: 0.5em;
-      background: #eee;
-      border: none;
-      cursor: pointer;
-      transition: background 0.3s, border-bottom 0.3s;
-    }
-    .nav-tabs-course button.active {
-      background: #fff;
-      border-bottom: 3px solid #0052cc;
-      font-weight: bold;
-    }
-    /* Container principal */
-    .container {
-      max-width: 800px;
-      margin: 1em auto;
-      padding: 0 1em;
-    }
-    /* Cartões (cards) */
-    .card {
-      background: #fff;
-      padding: 1.5em;
-      margin-bottom: 1.5em;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s;
-    }
-    .card:hover {
-      transform: scale(1.01);
-    }
-    .hidden {
-      display: none;
-    }
-    /* Botões */
-    .button {
-      display: inline-block;
-      background: #0052cc;
-      color: #fff;
-      padding: 0.75em 1.5em;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.3s;
-      text-decoration: none;
-      margin: 0.5em 0;
-    }
-    .button:hover {
-      background: #003d99;
-    }
-    /* Campos de formulário */
-    .input-field,
-    select,
-    input[type="date"],
-    input[type="number"] {
-      width: 100%;
-      padding: 0.75em;
-      margin: 0.5em 0;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    /* Lista de aulas */
-    ul.list-group {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-    ul.list-group li {
-      padding: 1em;
-      border-bottom: 1px solid #eee;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    ul.list-group li:last-child {
-      border-bottom: none;
-    }
-    /* Alert/Feedback */
-    .alert {
-      padding: 1em;
-      background: #dff0d8;
-      color: #3c763d;
-      border-radius: 4px;
-      margin: 1em 0;
-      text-align: center;
-    }
-    /* Painel Administrativo - Gerenciamento de Cursos */
-    .dias-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: space-between;
-      margin-bottom: 1em;
-    }
-    .dia-card {
-      flex: 1 1 calc(33.33% - 10px);
-      background: #eee;
-      text-align: center;
-      padding: 1em;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.2s;
-      user-select: none;
-    }
-    .dia-card:hover {
-      transform: scale(1.02);
-    }
-    .dia-card.active {
-      background: #0052cc;
-      color: #fff;
-    }
-    .dia-card span {
-      font-size: 1.1em;
-      font-weight: 600;
-      display: block;
-      margin-bottom: 0.5em;
-    }
-    .dia-turno {
-      display: none;
-      margin-top: 0.5em;
-    }
-    .dia-card.active .dia-turno {
-      display: block;
-    }
-    .dia-turno select {
-      width: 100%;
-      padding: 0.4em;
-      font-size: 0.9em;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    #cargaHorariaTotal {
-      background: #f0f0f0;
-      border: 1px solid #ccc;
-      cursor: default;
-    }
-    /* Calendário do App Aluno e do Admin */
-    .calendar, #adminCalendar {
-      margin: 1em 0;
-      overflow-x: auto;
-    }
-    .calendar-header, .admin-calendar-header {
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    .month-label {
-      font-size: 1.4em;
-      font-weight: bold;
-      display: block;
-      margin-bottom: 5px;
-    }
-    .calendar-nav {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-    }
-    .calendar-nav button {
-      background: #0052cc;
-      color: #fff;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .calendar-nav button:hover {
-      background: #003d99;
-    }
-    .calendar table, #adminCalendar table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    .calendar th, .calendar td, #adminCalendar th, #adminCalendar td {
-      border: 1px solid #ccc;
-      width: 14.28%;
-      height: 80px;
-      text-align: center;
-      vertical-align: top;
-      padding: 4px;
-    }
-    .calendar th, #adminCalendar th {
-      background: #f0f0f0;
-    }
-    /* Destaque para o dia atual no calendário do registro de chamada */
-    #adminCalendar td.today {
-      background-color: #e6f7ff;
-      border: 2px solid #0052cc;
-    }
-    .course-badge {
-      display: block;
-      padding: 2px 4px;
-      margin-top: 2px;
-      font-size: 0.8em;
-      color: #fff;
-      border-radius: 4px;
-    }
-    .attendance-badge {
-      display: inline-block;
-      padding: 2px 4px;
-      margin-top: 2px;
-      font-size: 0.8em;
-      color: #fff;
-      border-radius: 4px;
-      margin-left: 2px;
-    }
-    .presence-badge {
-      background: #28a745;
-    }
-    .absence-badge {
-      background: #dc3545;
-    }
-    .extra-badge {
-      display: inline-block;
-      background: #6c757d;
-      color: #fff;
-      padding: 2px 4px;
-      font-size: 0.8em;
-      border-radius: 4px;
-      margin-top: 2px;
-      cursor: pointer;
-    }
-    .legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      padding: 10px;
-      background-color: #f9f9f9;
-      border-radius: 5px;
-      margin-top: 10px;
-    }
-    .legend-item {
-      display: flex;
-      align-items: center;
-      font-size: 0.9em;
-    }
-    .legend-item .color-box {
-      width: 20px;
-      height: 20px;
-      display: inline-block;
-      margin-right: 8px;
-      border-radius: 4px;
-    }
-    /* Diário do Curso */
-    .diario-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1em;
-    }
-    .diario-table th,
-    .diario-table td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: center;
-    }
-    .diario-table th {
-      background: #f0f0f0;
-    }
-    /* Menu Sanduíche (Hamburger) – Painel Administrativo */
-    .admin-hamburger-container {
-      display: flex;
-      align-items: center;
-      margin-bottom: 1em;
-    }
-    .admin-hamburger-container #adminHamburger {
-      cursor: pointer;
-      font-size: 1.5em;
-      margin-right: 1em;
-    }
-    /* Sidebar com animação e overlay */
-    .admin-sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 250px;
-      height: 100%;
-      background: #fff;
-      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
-      padding: 1em;
-      z-index: 1000;
-      transform: translateX(-100%);
-      transition: transform 0.3s ease-in-out;
-    }
-    .admin-sidebar.active {
-      transform: translateX(0);
-    }
-    .admin-sidebar .close-btn {
-      cursor: pointer;
-      font-size: 1.2em;
-      color: #dc3545;
-      float: right;
-    }
-    .admin-sidebar-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 900;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s ease-in-out;
-    }
-    .admin-sidebar-overlay.active {
-      opacity: 1;
-      visibility: visible;
-    }
-    /* ===============================
-       Estilo para o Sheet do Admin
-       =============================== */
-    .admin-sheet {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: #fff;
-      border-top-left-radius: 10px;
-      border-top-right-radius: 10px;
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
-      padding: 1em;
-      z-index: 1500;
-      transform: translateY(100%);
-      transition: transform 0.3s ease-in-out;
-    }
-    .admin-sheet.active {
-      transform: translateY(0);
-    }
-    .admin-sheet .close-sheet {
-      float: right;
-      cursor: pointer;
-      font-size: 1.5em;
-      color: #dc3545;
-    }
-    /* ===============================
-       Novos Estilos para o Dashboard do Curso
-       =============================== */
-    .course-code-container {
-      text-align: center;
-      margin: 1em 0 1.5em;
-      padding: 0.5em;
-      background-color: #e0f3ff;
-      border: 1px solid #0052cc;
-      border-radius: 4px;
-    }
-    .course-code {
-      background: #0052cc;
-      color: #fff;
-      padding: 0.2em 0.5em;
-      border-radius: 4px;
-      font-weight: bold;
-      margin-left: 0.5em;
-    }
-    .course-content {
-      margin-top: 1em;
-      padding: 1em;
-      background: #fdfdfd;
-      border: 1px solid #eee;
-      border-radius: 4px;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <h1>Confirmação de Presença - Pronatec</h1>
-  </header>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Protótipo Melhorado - Presenças, Diário e Dashboard</title>
+        <link rel="stylesheet" href="css/reset.css">
+        <link rel="stylesheet" href="css/style.css">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+    <body>
+        <header>
+            <h1>Confirmação de Presença - Pronatec</h1>
+        </header>
 
-  <!-- Navegação entre módulos -->
-  <nav class="nav-tabs">
-    <button id="tabAluno" class="active">App Aluno</button>
-    <button id="tabOperador">Painel Administrativo</button>
-  </nav>
+        <nav class="nav-tabs">
+            <button id="tabAluno" class="active">App Aluno</button>
+            <button id="tabOperador">Painel Administrativo</button>
+        </nav>
 
-  <!-- Seção do App do Aluno -->
-  <section id="appAluno" class="container">
-    <!-- Tela de Login do Aluno -->
-    <div id="alunoLoginScreen" class="card">
-      <h2>Login do Aluno</h2>
-      <p>Entre com suas credenciais do gov.br</p>
-      <button id="btnLoginAluno" class="button">Login com gov.br</button>
-    </div>
-    <!-- Dashboard do Aluno -->
-    <div id="alunoDashboardScreen" class="card hidden">
-      <h2>Minhas Aulas - Mês Atual</h2>
-      <ul class="list-group" id="listaAulas">
-        <li data-aula-id="1">
-          <span>
-            <strong>Aula 1</strong> - 12/02/2025, 14:00<br />
-            <small>Cabeleireiro 240h</small>
-          </span>
-          <button class="btnDetalhes button">Detalhes</button>
-        </li>
-        <li data-aula-id="2">
-          <span>
-            <strong>Aula 2</strong> - 13/02/2025, 14:00<br />
-            <small>Cabeleireiro 240h</small>
-          </span>
-          <button class="btnDetalhes button">Detalhes</button>
-        </li>
-      </ul>
-      <button id="btnVerCalendario" class="button">Ver Calendário</button>
-      <button id="btnInserirCodigoCurso" class="button">Inserir código do curso</button>
-    </div>
-    <!-- Calendário do Aluno -->
-    <div id="alunoCalendarioScreen" class="card hidden">
-      <h2>Calendário de Cursos e Presenças</h2>
-      <div class="calendar">
-        <div class="calendar-header">
-          <span class="month-label" id="monthLabel"></span>
-          <div class="calendar-nav">
-            <button id="prevMonth">Anterior</button>
-            <button id="btnCurrentMonth">Mês Atual</button>
-            <button id="nextMonth">Próximo</button>
-          </div>
-        </div>
-        <div class="calendar-body" id="calendarBody"></div>
-      </div>
-      <!-- Timeline do Calendário -->
-      <div id="timelineView" class="hidden">
-        <h2>Timeline para <span id="timelineDateLabel"></span></h2>
-        <ul id="timelineList"></ul>
-        <button id="btnVoltarTimeline" class="button" style="background:#ccc; color:#333;">Voltar ao Calendário</button>
-      </div>
-      <!-- Legenda -->
-      <div class="legend">
-        <div class="legend-item">
-          <span class="color-box" style="background:#0052cc;"></span>
-          <span>Cabeleireiro 240h</span>
-        </div>
-        <div class="legend-item">
-          <span class="color-box" style="background:#ff5733;"></span>
-          <span>Curso X</span>
-        </div>
-        <div class="legend-item">
-          <span class="color-box" style="background:#28a745;"></span>
-          <span>Presença</span>
-        </div>
-        <div class="legend-item">
-          <span class="color-box" style="background:#dc3545;"></span>
-          <span>Falta</span>
-        </div>
-      </div>
-      <button id="btnVoltarCalendario" class="button" style="background:#ccc; color:#333;">Voltar</button>
-    </div>
-    <!-- Detalhes da Aula -->
-    <div id="alunoDetalhesScreen" class="card hidden">
-      <h2>Detalhes da Aula</h2>
-      <p id="detalhesInfo">Informações da aula selecionada aparecerão aqui.</p>
-      <button id="btnConfirmarPresenca" class="button">Confirmar Presença</button>
-      <button id="btnVoltarDashboard" class="button" style="background:#ccc; color:#333;">Voltar</button>
-    </div>
-    <!-- Feedback de Presença -->
-    <div id="alunoFeedbackScreen" class="card hidden">
-      <div class="alert">Presença confirmada com sucesso!</div>
-      <button id="btnFecharFeedback" class="button">Fechar</button>
-    </div>
-    <!-- Inserir Código do Curso -->
-    <div id="alunoCodigoCursoScreen" class="card hidden">
-      <h2>Entrar em Curso</h2>
-      <p>Insira o código do curso fornecido pelo administrador:</p>
-      <input type="text" id="codigoCurso" class="input-field" placeholder="Código do curso" />
-      <button id="btnEntrarCurso" class="button">Entrar no Curso</button>
-      <button id="btnVoltarDashboardCodigo" class="button" style="background:#ccc; color:#333;">Voltar</button>
-    </div>
-    <!-- Confirmação via QR Code -->
-    <div id="alunoQRCodeScreen" class="card hidden">
-      <h2>Confirmação de Presença</h2>
-      <p>Escaneie o QR Code exibido na aula para confirmar sua presença.</p>
-      <img src="https://api.qrserver.com/v1/create-qr-code/?data=QR+Code+Exemplo&size=200x200" alt="QR Code" style="display:block; margin:0 auto 1em;" />
-      <button id="btnSimularQRScan" class="button">Simular Leitura do QR Code</button>
-      <button id="btnVoltarDetalhesQRCode" class="button" style="background:#ccc; color:#333;">Voltar</button>
-    </div>
-  </section>
-
-  <!-- Seção do Painel Administrativo -->
-  <section id="painelOperador" class="container hidden">
-    <!-- Tela de Login do Operador -->
-    <div id="operadorLoginForm" class="card">
-      <h2>Login - Painel Administrativo</h2>
-      <p>Entre com suas credenciais</p>
-      <input type="text" placeholder="Usuário" class="input-field" />
-      <input type="password" placeholder="Senha" class="input-field" />
-      <button id="btnLoginOperador" class="button">Login</button>
-    </div>
-    <!-- Dashboard Administrativo (após login) -->
-    <div id="operadorDashboard" class="card hidden">
-      <!-- Menu Sanduíche (Hamburger) com overlay -->
-      <div id="adminHamburgerContainer" class="admin-hamburger-container">
-        <div id="adminHamburger">&#9776;</div>
-        <div id="adminSidebarMenu" class="admin-sidebar">
-          <span id="closeSidebar" class="close-btn">&times;</span>
-          <h3>Dashboards de Cursos</h3>
-          <a href="#" id="linkCurso1">Dashboard do Curso - Cabeleireiro 240h</a>
-          <a href="#" id="linkCurso2">Dashboard do Curso - Curso X</a>
-        </div>
-      </div>
-      <!-- Overlay que cobre a tela quando o menu estiver aberto -->
-      <div id="adminSidebarOverlay" class="admin-sidebar-overlay"></div>
-      <h2>Dashboard Administrativo</h2>
-      <p>Resumo do sistema:</p>
-      <ul>
-        <li>Total de Alunos: 120</li>
-        <li>Total de Cursos: 4</li>
-        <li>Aulas deste Mês: 20</li>
-      </ul>
-      <div style="margin-top:1em;">
-        <button id="btnVerCursos" class="button">Gerenciar Cursos</button>
-      </div>
-    </div>
-    <!-- Gerenciamento de Cursos -->
-    <div id="operadorCursos" class="card hidden">
-      <h2>Gerenciamento de Cursos</h2>
-      <form id="formCurso">
-        <label for="nomeCurso">Nome do Curso</label>
-        <input type="text" id="nomeCurso" class="input-field" placeholder="Ex: Cabeleireiro" required />
-        <label for="dataInicio">Data de Início</label>
-        <input type="date" id="dataInicio" class="input-field" required />
-        <label for="dataFim">Data de Término</label>
-        <input type="date" id="dataFim" class="input-field" required />
-        <label>Selecione os dias da semana e defina o turno</label>
-        <div class="dias-grid">
-          <div class="dia-card" data-dia="Seg">
-            <span>Seg</span>
-            <div class="dia-turno">
-              <select>
-                <option value="Manhã" selected>Manhã</option>
-                <option value="Tarde">Tarde</option>
-                <option value="Noite">Noite</option>
-              </select>
+        <section id="appAluno" class="container">
+            <div id="alunoLoginScreen" class="card">
+                <h2>Login do Aluno</h2>
+                <p>Entre com suas credenciais do gov.br</p>
+                <button id="btnLoginAluno" class="button">Login com gov.br</button>
             </div>
-          </div>
-          <div class="dia-card" data-dia="Ter">
-            <span>Ter</span>
-            <div class="dia-turno">
-              <select>
-                <option value="Manhã">Manhã</option>
-                <option value="Tarde" selected>Tarde</option>
-                <option value="Noite">Noite</option>
-              </select>
+            <!-- Dashboard do Aluno -->
+            <div id="alunoDashboardScreen" class="card hidden">
+                <h2>Minhas Aulas - Mês Atual</h2>
+                <ul class="list-group" id="listaAulas">
+                    <li data-aula-id="1">
+                    <span>
+                        <strong>Aula 1</strong> - 12/02/2025, 14:00<br />
+                        <small>Cabeleireiro 240h</small>
+                    </span>
+                    <button class="btnDetalhes button">Detalhes</button>
+                    </li>
+
+                    <li data-aula-id="2">
+                    <span>
+                        <strong>Aula 2</strong> - 13/02/2025, 14:00<br />
+                        <small>Cabeleireiro 240h</small>
+                    </span>
+                    <button class="btnDetalhes button">Detalhes</button>
+                    </li>
+                </ul>
+                <button id="btnVerCalendario" class="button">Ver Calendário</button>
+                <button id="btnInserirCodigoCurso" class="button">Inserir código do curso</button>
             </div>
-          </div>
-          <div class="dia-card" data-dia="Qua">
-            <span>Qua</span>
-            <div class="dia-turno">
-              <select>
-                <option value="Manhã" selected>Manhã</option>
-                <option value="Tarde">Tarde</option>
-                <option value="Noite">Noite</option>
-              </select>
+            <div id="alunoCalendarioScreen" class="card hidden">
+                <h2>Calendário de Cursos e Presenças</h2>
+                <div class="calendar">
+                    <div class="calendar-header">
+                        <span class="month-label" id="monthLabel"></span>
+                        <div class="calendar-nav">
+                            <button id="prevMonth">Anterior</button>
+                            <button id="btnCurrentMonth">Mês Atual</button>
+                            <button id="nextMonth">Próximo</button>
+                        </div>
+                    </div>
+                    <div class="calendar-body" id="calendarBody"></div>
+                </div>
+
+            <div id="timelineView" class="hidden">
+                <h2>Timeline para <span id="timelineDateLabel"></span></h2>
+                <ul id="timelineList"></ul>
+                <button id="btnVoltarTimeline" class="button" style="background:#ccc; color:#333;">Voltar ao Calendário</button>
             </div>
-          </div>
-          <div class="dia-card" data-dia="Qui">
-            <span>Qui</span>
-            <div class="dia-turno">
-              <select>
-                <option value="Manhã">Manhã</option>
-                <option value="Tarde" selected>Tarde</option>
-                <option value="Noite">Noite</option>
-              </select>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="color-box" style="background:#0052cc;"></span>
+                    <span>Cabeleireiro 240h</span>
+                </div>
+                <div class="legend-item">
+                    <span class="color-box" style="background:#ff5733;"></span>
+                    <span>Curso X</span>
+                </div>
+                <div class="legend-item">
+                    <span class="color-box" style="background:#28a745;"></span>
+                    <span>Presença</span>
+                </div>
+                <div class="legend-item">
+                    <span class="color-box" style="background:#dc3545;"></span>
+                    <span>Falta</span>
+                </div>
             </div>
-          </div>
-          <div class="dia-card" data-dia="Sex">
-            <span>Sex</span>
-            <div class="dia-turno">
-              <select>
-                <option value="Manhã" selected>Manhã</option>
-                <option value="Tarde">Tarde</option>
-                <option value="Noite">Noite</option>
-              </select>
+            <button id="btnVoltarCalendario" class="button" style="background:#ccc; color:#333;">Voltar</button>
             </div>
-          </div>
+
+            <div id="alunoDetalhesScreen" class="card hidden">
+                <h2>Detalhes da Aula</h2>
+                <p id="detalhesInfo">Informações da aula selecionada aparecerão aqui.</p>
+                <button id="btnConfirmarPresenca" class="button">Confirmar Presença</button>
+                <button id="btnVoltarDashboard" class="button" style="background:#ccc; color:#333;">Voltar</button>
+            </div>
+
+            <div id="alunoFeedbackScreen" class="card hidden">
+                <div class="alert">Presença confirmada com sucesso!</div>
+                <button id="btnFecharFeedback" class="button">Fechar</button>
+            </div>
+
+            <div id="alunoCodigoCursoScreen" class="card hidden">
+                <h2>Entrar em Curso</h2>
+                <p>Insira o código do curso fornecido pelo administrador:</p>
+                <input type="text" id="codigoCurso" class="input-field" placeholder="Código do curso" />
+                <button id="btnEntrarCurso" class="button">Entrar no Curso</button>
+                <button id="btnVoltarDashboardCodigo" class="button" style="background:#ccc; color:#333;">Voltar</button>
+            </div>
+
+            <div id="alunoQRCodeScreen" class="card hidden">
+                <h2>Confirmação de Presença</h2>
+                <p>Escaneie o QR Code exibido na aula para confirmar sua presença.</p>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?data=QR+Code+Exemplo&size=200x200" alt="QR Code" style="display:block; margin:0 auto 1em;" />
+                <button id="btnSimularQRScan" class="button">Simular Leitura do QR Code</button>
+                <button id="btnVoltarDetalhesQRCode" class="button" style="background:#ccc; color:#333;">Voltar</button>
+            </div>
+        </section>
+
+        <section id="painelOperador" class="container hidden">
+            <div id="operadorLoginForm" class="card">
+                <h2>Login - Painel Administrativo</h2>
+                <p>Entre com suas credenciais</p>
+                <input type="text" placeholder="Usuário" class="input-field" />
+                <input type="password" placeholder="Senha" class="input-field" />
+                <button id="btnLoginOperador" class="button">Login</button>
+            </div>
+
+            <div id="operadorDashboard" class="card hidden">
+                <div id="adminHamburgerContainer" class="admin-hamburger-container">
+                    <div id="adminHamburger">&#9776;</div>
+                    <div id="adminSidebarMenu" class="admin-sidebar">
+                        <span id="closeSidebar" class="close-btn">&times;</span>
+                        <h3>Dashboards de Cursos</h3>
+                        <a href="#" id="linkCurso1">Dashboard do Curso - Cabeleireiro 240h</a>
+                        <a href="#" id="linkCurso2">Dashboard do Curso - Curso X</a>
+                    </div>
+                </div>
+
+                <div id="adminSidebarOverlay" class="admin-sidebar-overlay"></div>
+                <h2>Dashboard Administrativo</h2>
+                <p>Resumo do sistema:</p>
+                <ul>
+                    <li>Total de Alunos: 120</li>
+                    <li>Total de Cursos: 4</li>
+                    <li>Aulas deste Mês: 20</li>
+                </ul>
+                <div style="margin-top:1em;">
+                    <button id="btnVerCursos" class="button">Gerenciar Cursos</button>
+                </div>
+            </div>
+
+            <div id="operadorCursos" class="card hidden">
+                <h2>Gerenciamento de Cursos</h2>
+                <form id="formCurso">
+                    <label for="nomeCurso">Nome do Curso</label>
+                    <input type="text" id="nomeCurso" class="input-field" placeholder="Ex: Cabeleireiro" required />
+                    <label for="dataInicio">Data de Início</label>
+                    <input type="date" id="dataInicio" class="input-field" required />
+                    <label for="dataFim">Data de Término</label>
+                    <input type="date" id="dataFim" class="input-field" required />
+                    <label>Selecione os dias da semana e defina o turno</label>
+                    <div class="dias-grid">
+                        <div class="dia-card" data-dia="Seg">
+                            <span>Seg</span>
+                            <div class="dia-turno">
+                                <select>
+                                    <option value="Manhã" selected>Manhã</option>
+                                    <option value="Tarde">Tarde</option>
+                                    <option value="Noite">Noite</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="dia-card" data-dia="Ter">
+                            <span>Ter</span>
+                            <div class="dia-turno">
+                                <select>
+                                    <option value="Manhã">Manhã</option>
+                                    <option value="Tarde" selected>Tarde</option>
+                                    <option value="Noite">Noite</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="dia-card" data-dia="Qua">
+                            <span>Qua</span>
+                            <div class="dia-turno">
+                                <select>
+                                    <option value="Manhã" selected>Manhã</option>
+                                    <option value="Tarde">Tarde</option>
+                                    <option value="Noite">Noite</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="dia-card" data-dia="Qui">
+                            <span>Qui</span>
+                            <div class="dia-turno">
+                                <select>
+                                    <option value="Manhã">Manhã</option>
+                                    <option value="Tarde" selected>Tarde</option>
+                                    <option value="Noite">Noite</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="dia-card" data-dia="Sex">
+                            <span>Sex</span>
+                            <div class="dia-turno">
+                                <select>
+                                    <option value="Manhã" selected>Manhã</option>
+                                    <option value="Tarde">Tarde</option>
+                                    <option value="Noite">Noite</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <label for="horasPorAula">Horas por Aula</label>
+                    <input type="number" id="horasPorAula" class="input-field" min="1" max="8" value="2" required />
+                    <label for="cargaHorariaTotal">Carga Horária Total do Curso</label>
+                    <input type="text" id="cargaHorariaTotal" class="input-field" readonly />
+                    <button type="button" class="button" onclick="salvarCurso()">Salvar Curso</button>
+                    <button type="button" id="btnVoltarDashboardOperador1" class="button" style="background:#ccc; color:#333;">Voltar</button>
+                </form>
+            </div>
+
+            <div id="operadorDashboardCurso" class="card hidden">
+                <h2>Dashboard do Curso</h2>
+                <div class="course-code-container">
+                    Código do Curso: <span id="courseCodeDisplay" class="course-code"></span>
+                </div>
+                <nav class="nav-tabs-course">
+                    <button id="tabRegistroChamada" class="active">Registro de Chamada</button>
+                    <button id="tabDiarioCurso">Visualizar Diário</button>
+                </nav>
+                <div id="contentRegistroChamada" class="course-content">
+                
+                    <div id="adminCalendarContainer">
+                        <div class="admin-calendar-header" style="text-align: center; margin-bottom: 10px;">
+                        <span class="month-label" id="adminMonthLabel"></span>
+                            <div class="calendar-nav" style="display: flex; justify-content: center; gap: 10px; margin-top: 5px;">
+                                <button id="adminPrevMonth">Anterior</button>
+                                <button id="adminCurrentMonth">Mês Atual</button>
+                                <button id="adminNextMonth">Próximo</button>
+                            </div>
+                        </div>
+                        <div id="adminCalendar"></div>
+                    </div>
+                <div id="adminClassDetails" class="hidden"></div>
+            </div>
+
+            <div id="contentDiarioCurso" class="course-content hidden">
+                <h3>Diário do Curso</h3>
+                <table class="diario-table">
+                    <thead>
+                        <tr>
+                            <th>Aluno</th>
+                            <th>Data</th>
+                            <th>Presença</th>
+                            <th>Observações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>João da Silva</td>
+                            <td>05/07/2025</td>
+                            <td>Presente</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>Maria Oliveira</td>
+                            <td>05/07/2025</td>
+                            <td>Falta</td>
+                            <td>Motivo: Atraso</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <button id="btnVoltarDashboardCurso" class="button" style="background:#ccc; color:#333;">Voltar</button>
+            </div>
+        </section>
+
+        <div id="adminClassSheet" class="admin-sheet hidden">
+            <div class="sheet-content">
+                <span id="closeSheet" class="close-sheet">&times;</span>
+                <h3 id="sheetClassLabel"></h3>
+                <p id="sheetClassDateTime"></p>
+                <div id="sheetQRCodeContainer"></div>
+                <button id="sheetRegenerateQRCode" class="button">Gerar QR Code Novamente</button>
+            </div>
         </div>
-        <label for="horasPorAula">Horas por Aula</label>
-        <input type="number" id="horasPorAula" class="input-field" min="1" max="8" value="2" required />
-        <label for="cargaHorariaTotal">Carga Horária Total do Curso</label>
-        <input type="text" id="cargaHorariaTotal" class="input-field" readonly />
-        <button type="button" class="button" onclick="salvarCurso()">Salvar Curso</button>
-        <button type="button" id="btnVoltarDashboardOperador1" class="button" style="background:#ccc; color:#333;">Voltar</button>
-      </form>
-    </div>
-    <!-- Dashboard do Curso Unificado (Registro de Chamada e Diário) -->
-    <div id="operadorDashboardCurso" class="card hidden">
-      <h2>Dashboard do Curso</h2>
-      <!-- Destaque para o Código da Turma -->
-      <div class="course-code-container">
-        Código do Curso: <span id="courseCodeDisplay" class="course-code"></span>
-      </div>
-      <nav class="nav-tabs-course">
-        <button id="tabRegistroChamada" class="active">Registro de Chamada</button>
-        <button id="tabDiarioCurso">Visualizar Diário</button>
-      </nav>
-      <!-- Aba Registro de Chamada -->
-      <div id="contentRegistroChamada" class="course-content">
-        <!-- Calendário do Curso com Navegação -->
-        <div id="adminCalendarContainer">
-          <div class="admin-calendar-header" style="text-align: center; margin-bottom: 10px;">
-            <span class="month-label" id="adminMonthLabel"></span>
-            <div class="calendar-nav" style="display: flex; justify-content: center; gap: 10px; margin-top: 5px;">
-              <button id="adminPrevMonth">Anterior</button>
-              <button id="adminCurrentMonth">Mês Atual</button>
-              <button id="adminNextMonth">Próximo</button>
-            </div>
-          </div>
-          <div id="adminCalendar"></div>
-        </div>
-        <!-- Nesta versão, ao clicar em uma aula o sheet é aberto -->
-        <div id="adminClassDetails" class="hidden">
-          <!-- Conteúdo antigo opcional (não utilizado) -->
-        </div>
-      </div>
-      <!-- Aba Diário do Curso -->
-      <div id="contentDiarioCurso" class="course-content hidden">
-        <h3>Diário do Curso</h3>
-        <table class="diario-table">
-          <thead>
-            <tr>
-              <th>Aluno</th>
-              <th>Data</th>
-              <th>Presença</th>
-              <th>Observações</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>João da Silva</td>
-              <td>05/07/2025</td>
-              <td>Presente</td>
-              <td>-</td>
-            </tr>
-            <tr>
-              <td>Maria Oliveira</td>
-              <td>05/07/2025</td>
-              <td>Falta</td>
-              <td>Motivo: Atraso</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <button id="btnVoltarDashboardCurso" class="button" style="background:#ccc; color:#333;">Voltar</button>
-    </div>
-  </section>
-
-  <!-- ===============================
-       Sheet View para Informações da Aula e QR Code (Painel Administrativo)
-       =============================== -->
-  <div id="adminClassSheet" class="admin-sheet hidden">
-    <div class="sheet-content">
-      <span id="closeSheet" class="close-sheet">&times;</span>
-      <h3 id="sheetClassLabel"></h3>
-      <p id="sheetClassDateTime"></p>
-      <div id="sheetQRCodeContainer">
-        <!-- QR Code e contagem regressiva serão inseridos aqui -->
-      </div>
-      <button id="sheetRegenerateQRCode" class="button">Gerar QR Code Novamente</button>
-    </div>
-  </div>
-
-  <script>
-    // Variáveis globais e dados simulados
-    let mockedCourseCode = "TURMA123";
-    const courseClasses = [
-      { date: '2025-02-12', time: '14:00', label: 'Aula 1' },
-      { date: '2025-02-13', time: '14:00', label: 'Aula 2' }
-    ];
-    const sampleEvents = [
-      { day: 5, course: 'Cabeleireiro 240h', color: '#0052cc', attendance: 'P', time: '08:00' },
-      { day: 10, course: 'Curso X', color: '#ff5733', attendance: 'F', time: '10:00' },
-      { day: 15, course: 'Cabeleireiro 240h', color: '#0052cc', attendance: 'P', time: '14:00' },
-      { day: 15, course: 'Cabeleireiro 240h', color: '#0052cc', attendance: 'P', time: '16:00' },
-      { day: 15, course: 'Cabeleireiro 240h', color: '#0052cc', attendance: 'F', time: '18:00' }
-    ];
-
-    /* ===============================
-       Calendário do App Aluno
-       =============================== */
-    let currentYear, currentMonth;
-    function initCalendar() {
-      const today = new Date();
-      currentYear = today.getFullYear();
-      currentMonth = today.getMonth();
-      generateCalendar(currentYear, currentMonth);
-    }
-    function generateCalendar(year, month) {
-      const calendarBody = document.getElementById('calendarBody');
-      calendarBody.innerHTML = "";
-      const table = document.createElement('table');
-      const thead = document.createElement('thead');
-      const headerRow = document.createElement('tr');
-      ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].forEach(dia => {
-        const th = document.createElement('th');
-        th.textContent = dia;
-        headerRow.appendChild(th);
-      });
-      thead.appendChild(headerRow);
-      table.appendChild(thead);
-
-      const tbody = document.createElement('tbody');
-      const primeiroDia = new Date(year, month, 1).getDay();
-      const totalDias = new Date(year, month + 1, 0).getDate();
-      let data = 1;
-
-      for (let i = 0; i < 6; i++) {
-        const tr = document.createElement('tr');
-        for (let j = 0; j < 7; j++) {
-          const td = document.createElement('td');
-          if ((i === 0 && j < primeiroDia) || data > totalDias) {
-            td.textContent = "";
-          } else {
-            td.textContent = data;
-            td.setAttribute('data-day', data);
-            const eventsForDay = sampleEvents.filter(e => e.day === data);
-            if (eventsForDay.length) {
-              const displayEvents = eventsForDay.slice(0, 2);
-              displayEvents.forEach(event => {
-                const br = document.createElement('br');
-                td.appendChild(br);
-                const courseBadge = document.createElement('span');
-                courseBadge.classList.add('course-badge');
-                courseBadge.style.backgroundColor = event.color;
-                courseBadge.textContent = event.course;
-                td.appendChild(courseBadge);
-                const attendanceBadge = document.createElement('span');
-                attendanceBadge.classList.add('attendance-badge');
-                attendanceBadge.classList.add(event.attendance === 'P' ? 'presence-badge' : 'absence-badge');
-                attendanceBadge.textContent = event.attendance;
-                td.appendChild(attendanceBadge);
-              });
-              if (eventsForDay.length > 2) {
-                const brExtra = document.createElement('br');
-                td.appendChild(brExtra);
-                const extraBadge = document.createElement('span');
-                extraBadge.classList.add('extra-badge');
-                extraBadge.textContent = `+${eventsForDay.length - 2} mais`;
-                td.appendChild(extraBadge);
-              }
-            }
-            data++;
-          }
-          tr.appendChild(td);
-        }
-        tbody.appendChild(tr);
-        if (data > totalDias) break;
-      }
-      table.appendChild(tbody);
-      calendarBody.appendChild(table);
-
-      const monthLabel = document.getElementById('monthLabel');
-      const nomesMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-      monthLabel.textContent = nomesMeses[month] + ' ' + year;
-    }
-    document.getElementById('prevMonth').addEventListener('click', () => {
-      currentMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-      if (currentMonth === 11) currentYear--;
-      generateCalendar(currentYear, currentMonth);
-    });
-    document.getElementById('nextMonth').addEventListener('click', () => {
-      currentMonth = currentMonth === 11 ? 0 : currentMonth + 1;
-      if (currentMonth === 0) currentYear++;
-      generateCalendar(currentYear, currentMonth);
-    });
-    document.getElementById('btnCurrentMonth').addEventListener('click', () => {
-      const today = new Date();
-      currentYear = today.getFullYear();
-      currentMonth = today.getMonth();
-      generateCalendar(currentYear, currentMonth);
-    });
-    document.getElementById('calendarBody').addEventListener('click', (e) => {
-      if (e.target && e.target.classList.contains('extra-badge')) {
-        const day = e.target.parentElement.getAttribute('data-day');
-        showTimelineView(day);
-      }
-    });
-    function showTimelineView(day) {
-      const timelineList = document.getElementById('timelineList');
-      timelineList.innerHTML = "";
-      const timelineDateLabel = document.getElementById('timelineDateLabel');
-      const nomesMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-      timelineDateLabel.textContent = day + " " + nomesMeses[currentMonth] + " " + currentYear;
-      const events = sampleEvents.filter(e => e.day === parseInt(day));
-      events.forEach(ev => {
-        const li = document.createElement('li');
-        li.textContent = ev.time + " - " + ev.course + " - " + (ev.attendance === 'P' ? "Presente" : "Falta");
-        li.style.borderLeft = "4px solid " + ev.color;
-        li.style.paddingLeft = "8px";
-        timelineList.appendChild(li);
-      });
-      document.querySelector('.calendar').classList.add('hidden');
-      document.getElementById('timelineView').classList.remove('hidden');
-    }
-    document.getElementById('btnVoltarTimeline').addEventListener('click', () => {
-      document.getElementById('timelineView').classList.add('hidden');
-      document.querySelector('.calendar').classList.remove('hidden');
-    });
-
-    /* ===============================
-       Calendário do Painel Administrativo
-       =============================== */
-    let adminCalendarYear, adminCalendarMonth;
-    function initAdminCalendar() {
-      const today = new Date();
-      if (adminCalendarYear === undefined || adminCalendarMonth === undefined) {
-        adminCalendarYear = today.getFullYear();
-        adminCalendarMonth = today.getMonth();
-      }
-      const adminMonthLabel = document.getElementById('adminMonthLabel');
-      const nomesMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-      adminMonthLabel.textContent = nomesMeses[adminCalendarMonth] + ' ' + adminCalendarYear;
-      
-      const adminCalendarDiv = document.getElementById('adminCalendar');
-      adminCalendarDiv.innerHTML = "";
-      
-      let table = document.createElement('table');
-      let thead = document.createElement('thead');
-      let headerRow = document.createElement('tr');
-      ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].forEach(dia => {
-        let th = document.createElement('th');
-        th.textContent = dia;
-        headerRow.appendChild(th);
-      });
-      thead.appendChild(headerRow);
-      table.appendChild(thead);
-      
-      let tbody = document.createElement('tbody');
-      let firstDay = new Date(adminCalendarYear, adminCalendarMonth, 1).getDay();
-      let totalDays = new Date(adminCalendarYear, adminCalendarMonth + 1, 0).getDate();
-      let dateNum = 1;
-      
-      for (let i = 0; i < 6; i++) {
-        let tr = document.createElement('tr');
-        for (let j = 0; j < 7; j++) {
-          let td = document.createElement('td');
-          if ((i === 0 && j < firstDay) || dateNum > totalDays) {
-            td.textContent = "";
-          } else {
-            td.textContent = dateNum;
-            let monthStr = (adminCalendarMonth + 1).toString().padStart(2, '0');
-            let dayStr = dateNum.toString().padStart(2, '0');
-            let dateStr = `${adminCalendarYear}-${monthStr}-${dayStr}`;
-            const currentDate = new Date();
-            const currentStr = `${currentDate.getFullYear()}-${(currentDate.getMonth()+1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
-            if (dateStr === currentStr) {
-              td.classList.add('today');
-            }
-            let classData = courseClasses.find(c => c.date === dateStr);
-            if (classData) {
-              let marker = document.createElement('div');
-              marker.textContent = classData.label;
-              marker.style.background = "#0052cc";
-              marker.style.color = "#fff";
-              marker.style.padding = "2px 4px";
-              marker.style.borderRadius = "4px";
-              marker.style.marginTop = "4px";
-              td.appendChild(marker);
-              td.style.cursor = "pointer";
-              // Ao clicar na célula, abre a view do tipo sheet com as informações da aula
-              td.addEventListener('click', function() {
-                openAdminClassSheet(classData);
-              });
-            }
-            dateNum++;
-          }
-          tr.appendChild(td);
-        }
-        tbody.appendChild(tr);
-        if (dateNum > totalDays) break;
-      }
-      table.appendChild(tbody);
-      adminCalendarDiv.appendChild(table);
-    }
-    document.getElementById('adminPrevMonth').addEventListener('click', () => {
-      adminCalendarMonth = adminCalendarMonth === 0 ? 11 : adminCalendarMonth - 1;
-      if (adminCalendarMonth === 11) adminCalendarYear--;
-      initAdminCalendar();
-    });
-    document.getElementById('adminNextMonth').addEventListener('click', () => {
-      adminCalendarMonth = adminCalendarMonth === 11 ? 0 : adminCalendarMonth + 1;
-      if (adminCalendarMonth === 0) adminCalendarYear++;
-      initAdminCalendar();
-    });
-    document.getElementById('adminCurrentMonth').addEventListener('click', () => {
-      const today = new Date();
-      adminCalendarYear = today.getFullYear();
-      adminCalendarMonth = today.getMonth();
-      initAdminCalendar();
-    });
-
-    /* ===============================
-       Funções para abrir a Sheet com informações da aula e QR Code
-       =============================== */
-    function openAdminClassSheet(classData) {
-      // Armazena a aula selecionada para uso posterior
-      window.selectedSheetClass = classData;
-      // Atualiza os elementos da sheet com as informações da aula
-      document.getElementById('sheetClassLabel').textContent = classData.label;
-      document.getElementById('sheetClassDateTime').textContent = `Data: ${classData.date} - Horário: ${classData.time}`;
-      // Se a janela de tempo permitir gerar o QR Code, gera-o; caso contrário, mostra mensagem.
-      if (canGenerateQRCode(classData)) {
-        generateSheetQRCode(classData);
-      } else {
-        document.getElementById('sheetQRCodeContainer').innerHTML = `<p>Horário para gerar QR Code indisponível</p>`;
-      }
-      // Abre a sheet (remove a classe "hidden" e adiciona "active")
-      document.getElementById('adminClassSheet').classList.remove('hidden');
-      document.getElementById('adminClassSheet').classList.add('active');
-    }
-    function generateSheetQRCode(classData) {
-      const sheetQRCodeContainer = document.getElementById('sheetQRCodeContainer');
-      // Utiliza a API do QR Server para gerar o QR Code dinamicamente
-      const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent("QR Code " + classData.label)}&size=200x200`;
-      sheetQRCodeContainer.innerHTML = `
-        <img id="sheetQRCodeImage" src="${qrCodeUrl}" alt="QR Code" style="width:200px; height:200px; margin-bottom: 1em;" />
-        <p id="sheetQRCountdown" style="font-weight:bold;">Tempo restante: 60s</p>
-      `;
-      // Limpa timers anteriores, se houver
-      if(window.sheetQrTimer) { clearTimeout(window.sheetQrTimer); }
-      if(window.sheetQrTimerInterval) { clearInterval(window.sheetQrTimerInterval); }
-      
-      let secondsLeft = 60; // Tempo de 1 minuto
-      const countdownElem = document.getElementById('sheetQRCountdown');
-      window.sheetQrTimerInterval = setInterval(() => {
-        secondsLeft--;
-        if (secondsLeft > 0) {
-          countdownElem.textContent = "Tempo restante: " + secondsLeft + "s";
-        } else {
-          countdownElem.textContent = "";
-          clearInterval(window.sheetQrTimerInterval);
-        }
-      }, 1000);
-      window.sheetQrTimer = setTimeout(() => {
-        sheetQRCodeContainer.innerHTML = "<p style='color:red; font-weight:bold;'>QR Code Expirado</p>";
-      }, 60000); // 60 segundos em milissegundos
-    }
-    function canGenerateQRCode(classData) {
-      let classStart = new Date(`${classData.date}T${classData.time}:00`);
-      let now = new Date();
-      let windowStart = new Date(classStart.getTime() - 15 * 60 * 1000);
-      let windowEnd = new Date(classStart.getTime() + 15 * 60 * 1000);
-      return now >= windowStart && now <= windowEnd;
-    }
-    // Fechar o sheet quando o usuário clicar no X
-    document.getElementById('closeSheet').addEventListener('click', () => {
-      document.getElementById('adminClassSheet').classList.remove('active');
-      // Opcionalmente, após a animação, esconder o elemento
-      setTimeout(() => {
-        document.getElementById('adminClassSheet').classList.add('hidden');
-      }, 300);
-    });
-    // Botão para regenerar o QR Code
-    document.getElementById('sheetRegenerateQRCode').addEventListener('click', () => {
-      if(window.selectedSheetClass) {
-        generateSheetQRCode(window.selectedSheetClass);
-      }
-    });
-
-    /* ===============================
-       Fluxo de Telas e Navegação
-       =============================== */
-    document.addEventListener('DOMContentLoaded', () => {
-      // Alterna entre App Aluno e Painel Administrativo
-      const tabAluno = document.getElementById('tabAluno');
-      const tabOperador = document.getElementById('tabOperador');
-      const appAlunoSection = document.getElementById('appAluno');
-      const painelOperadorSection = document.getElementById('painelOperador');
-      
-      tabAluno.addEventListener('click', () => {
-        tabAluno.classList.add('active');
-        tabOperador.classList.remove('active');
-        appAlunoSection.classList.remove('hidden');
-        painelOperadorSection.classList.add('hidden');
-      });
-      
-      tabOperador.addEventListener('click', () => {
-        tabOperador.classList.add('active');
-        tabAluno.classList.remove('active');
-        painelOperadorSection.classList.remove('hidden');
-        appAlunoSection.classList.add('hidden');
-      });
-
-      // Fluxo do App Aluno
-      const alunoLoginScreen = document.getElementById('alunoLoginScreen');
-      const alunoDashboardScreen = document.getElementById('alunoDashboardScreen');
-      const alunoDetalhesScreen = document.getElementById('alunoDetalhesScreen');
-      const alunoFeedbackScreen = document.getElementById('alunoFeedbackScreen');
-      const alunoCalendarioScreen = document.getElementById('alunoCalendarioScreen');
-      const alunoCodigoCursoScreen = document.getElementById('alunoCodigoCursoScreen');
-      const alunoQRCodeScreen = document.getElementById('alunoQRCodeScreen');
-
-      document.getElementById('btnLoginAluno').addEventListener('click', () => {
-        alunoLoginScreen.classList.add('hidden');
-        alunoDashboardScreen.classList.remove('hidden');
-      });
-      document.getElementById('btnVerCalendario').addEventListener('click', () => {
-        alunoDashboardScreen.classList.add('hidden');
-        alunoCalendarioScreen.classList.remove('hidden');
-        initCalendar();
-      });
-      document.getElementById('btnVoltarCalendario').addEventListener('click', () => {
-        alunoCalendarioScreen.classList.add('hidden');
-        alunoDashboardScreen.classList.remove('hidden');
-      });
-      document.getElementById('listaAulas').addEventListener('click', (e) => {
-        if (e.target && e.target.matches('.btnDetalhes')) {
-          const aulaId = e.target.closest('li').getAttribute('data-aula-id');
-          document.getElementById('detalhesInfo').textContent = `Detalhes da Aula ${aulaId}: Data, horário e informações do curso.`;
-          alunoDashboardScreen.classList.add('hidden');
-          alunoDetalhesScreen.classList.remove('hidden');
-        }
-      });
-      document.getElementById('btnConfirmarPresenca').addEventListener('click', () => {
-        alunoDetalhesScreen.classList.add('hidden');
-        alunoQRCodeScreen.classList.remove('hidden');
-      });
-      document.getElementById('btnSimularQRScan').addEventListener('click', () => {
-        alunoQRCodeScreen.classList.add('hidden');
-        alunoFeedbackScreen.classList.remove('hidden');
-      });
-      document.getElementById('btnVoltarDetalhesQRCode').addEventListener('click', () => {
-        alunoQRCodeScreen.classList.add('hidden');
-        alunoDetalhesScreen.classList.remove('hidden');
-      });
-      document.getElementById('btnVoltarDashboard').addEventListener('click', () => {
-        alunoDetalhesScreen.classList.add('hidden');
-        alunoDashboardScreen.classList.remove('hidden');
-      });
-      document.getElementById('btnFecharFeedback').addEventListener('click', () => {
-        alunoFeedbackScreen.classList.add('hidden');
-        alunoDashboardScreen.classList.remove('hidden');
-      });
-      document.getElementById('btnInserirCodigoCurso').addEventListener('click', () => {
-        alunoDashboardScreen.classList.add('hidden');
-        alunoCodigoCursoScreen.classList.remove('hidden');
-      });
-      document.getElementById('btnVoltarDashboardCodigo').addEventListener('click', () => {
-        alunoCodigoCursoScreen.classList.add('hidden');
-        alunoDashboardScreen.classList.remove('hidden');
-      });
-      document.getElementById('btnEntrarCurso').addEventListener('click', () => {
-        const codigo = document.getElementById('codigoCurso').value.trim();
-        if (!codigo) {
-          alert("Por favor, insira um código válido.");
-        } else if (codigo === mockedCourseCode) {
-          alert("Você entrou no curso com sucesso!");
-          document.getElementById('codigoCurso').value = "";
-          alunoCodigoCursoScreen.classList.add('hidden');
-          alunoDashboardScreen.classList.remove('hidden');
-        } else {
-          alert("Código inválido. Verifique o código e tente novamente.");
-        }
-      });
-
-      // Fluxo do Painel Administrativo
-      const operadorDashboard = document.getElementById('operadorDashboard');
-      const operadorCursos = document.getElementById('operadorCursos');
-      const operadorDashboardCurso = document.getElementById('operadorDashboardCurso');
-
-      document.getElementById('btnLoginOperador').addEventListener('click', () => {
-        document.getElementById('operadorLoginForm').classList.add('hidden');
-        operadorDashboard.classList.remove('hidden');
-      });
-      document.getElementById('btnVerCursos').addEventListener('click', () => {
-        operadorDashboard.classList.add('hidden');
-        operadorCursos.classList.remove('hidden');
-      });
-      document.getElementById('btnVoltarDashboardOperador1').addEventListener('click', () => {
-        operadorCursos.classList.add('hidden');
-        operadorDashboard.classList.remove('hidden');
-      });
-      // Menu Hamburger
-      document.getElementById('adminHamburger').addEventListener('click', () => {
-        document.getElementById('adminSidebarMenu').classList.add('active');
-        document.getElementById('adminSidebarOverlay').classList.add('active');
-      });
-      document.getElementById('closeSidebar').addEventListener('click', () => {
-        document.getElementById('adminSidebarMenu').classList.remove('active');
-        document.getElementById('adminSidebarOverlay').classList.remove('active');
-      });
-      document.getElementById('adminSidebarOverlay').addEventListener('click', () => {
-        document.getElementById('adminSidebarMenu').classList.remove('active');
-        document.getElementById('adminSidebarOverlay').classList.remove('active');
-      });
-      document.getElementById('linkCurso1').addEventListener('click', (e) => {
-        e.preventDefault();
-        operadorDashboard.classList.add('hidden');
-        operadorDashboardCurso.classList.remove('hidden');
-        document.getElementById('courseCodeDisplay').textContent = mockedCourseCode;
-        document.getElementById('adminSidebarMenu').classList.remove('active');
-        document.getElementById('adminSidebarOverlay').classList.remove('active');
-      });
-      document.getElementById('linkCurso2').addEventListener('click', (e) => {
-        e.preventDefault();
-        operadorDashboard.classList.add('hidden');
-        operadorDashboardCurso.classList.remove('hidden');
-        document.getElementById('courseCodeDisplay').textContent = "CURSOX456";
-        document.getElementById('adminSidebarMenu').classList.remove('active');
-        document.getElementById('adminSidebarOverlay').classList.remove('active');
-      });
-      document.getElementById('btnVoltarDashboardCurso').addEventListener('click', () => {
-        operadorDashboardCurso.classList.add('hidden');
-        operadorDashboard.classList.remove('hidden');
-      });
-      // Alterna as abas internas do Dashboard do Curso
-      const tabRegistroChamada = document.getElementById('tabRegistroChamada');
-      const tabDiarioCurso = document.getElementById('tabDiarioCurso');
-      const contentRegistroChamada = document.getElementById('contentRegistroChamada');
-      const contentDiarioCurso = document.getElementById('contentDiarioCurso');
-
-      tabRegistroChamada.addEventListener('click', () => {
-        tabRegistroChamada.classList.add('active');
-        tabDiarioCurso.classList.remove('active');
-        contentRegistroChamada.classList.remove('hidden');
-        contentDiarioCurso.classList.add('hidden');
-        initAdminCalendar();
-      });
-      tabDiarioCurso.addEventListener('click', () => {
-        tabDiarioCurso.classList.add('active');
-        tabRegistroChamada.classList.remove('active');
-        contentDiarioCurso.classList.remove('hidden');
-        contentRegistroChamada.classList.add('hidden');
-      });
-    });
-
-    /* ===============================
-       Funções Auxiliares do Gerenciamento de Cursos
-       =============================== */
-    function updateCargaHoraria() {
-      const diaCards = document.querySelectorAll('#operadorCursos .dia-card');
-      const activeDays = [];
-      const mapping = { 'Dom': 0, 'Seg': 1, 'Ter': 2, 'Qua': 3, 'Qui': 4, 'Sex': 5, 'Sáb': 6 };
-      diaCards.forEach(card => {
-        if (card.classList.contains('active')) {
-          const diaAbreviado = card.getAttribute('data-dia');
-          if (mapping.hasOwnProperty(diaAbreviado)) {
-            activeDays.push(mapping[diaAbreviado]);
-          }
-        }
-      });
-      
-      const horasPorAula = parseFloat(document.getElementById('horasPorAula').value) || 0;
-      const dataInicioStr = document.getElementById('dataInicio').value;
-      const dataFimStr = document.getElementById('dataFim').value;
-      let totalClasses = 0;
-      
-      if (dataInicioStr && dataFimStr) {
-        const dataInicio = new Date(dataInicioStr);
-        const dataFim = new Date(dataFimStr);
-        for (let d = new Date(dataInicio); d <= dataFim; d.setDate(d.getDate() + 1)) {
-          if (activeDays.includes(d.getDay())) {
-            totalClasses++;
-          }
-        }
-      }
-      
-      const cargaTotal = totalClasses * horasPorAula;
-      document.getElementById('cargaHorariaTotal').value = cargaTotal + "h";
-    }
-    function salvarCurso() {
-      mockedCourseCode = "TURMA123";
-      alert("Curso salvo com sucesso!\nCódigo do curso gerado: " + mockedCourseCode);
-    }
-    document.addEventListener('DOMContentLoaded', () => {
-      const diaCards = document.querySelectorAll('#operadorCursos .dia-card');
-      diaCards.forEach(card => {
-        card.addEventListener('click', () => {
-          card.classList.toggle('active');
-          updateCargaHoraria();
-        });
-      });
-      updateCargaHoraria();
-    });
-  </script>
-</body>
+        <script src="index.js"></script>
+    </body>
 </html>
