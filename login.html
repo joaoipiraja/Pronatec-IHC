@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Plataforma Educacional</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <header>
+        <div class="caixa">
+            <h1><img src="img/ifce.png" alt="Logo"></h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="cadastro.html">Cadastro</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <main>
+		<div class="container">
+			<h2>Login</h2>
+			<form id="loginForm">
+				<input type="email" id="email" placeholder="Email" required>
+				<select id="tipoUsuario">
+					<option value="aluno">Aluno</option>
+					<option value="professor">Professor</option>
+				</select>
+				<input type="password" id="senha" placeholder="Senha" required>
+				<button type="submit">Entrar</button>
+			</form>
+			<p>Não tem conta? <a href="cadastro.html">Cadastre-se</a></p>
+		</div>
+		<script src="js/login.js"></script>
+    </main>
+    
+    <footer>
+        <img src="img/IHC.jpeg" alt="IHC">
+        <p class="copyright">&copy; Copyright Plataforma Educacional - 2025</p>
+    </footer>
+</body>
+</html>
