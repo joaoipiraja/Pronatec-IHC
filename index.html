@@ -4,197 +4,164 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Protótipo Melhorado - Presenças, Diário e Dashboard</title>
-    <link rel="stylesheet" href="css/reset.css" />
-    <link rel="stylesheet" href="css/style.css" />
+    <!-- Google Fonts -->
     <link
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
+    <!-- Estilos -->
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <!-- Chart.js (se necessário) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body>
+    <!-- Cabeçalho -->
     <header>
       <h1>Confirmação de Presença - Pronatec</h1>
     </header>
 
+    <!-- Navegação principal -->
     <nav class="nav-tabs">
       <button id="tabAluno" class="active">App Aluno</button>
       <button id="tabOperador">Painel Administrativo</button>
     </nav>
 
+    <!-- Seção do App Aluno -->
     <section id="appAluno" class="container">
+      <!-- Tela de Login do Aluno -->
       <div id="alunoLoginScreen" class="card">
         <h2>Login do Aluno</h2>
         <p>Entre com suas credenciais do gov.br</p>
         <button id="btnLoginAluno" class="button">Login com gov.br</button>
       </div>
+
       <!-- Dashboard do Aluno -->
       <div id="alunoDashboardScreen" class="card hidden">
-        <h2>Minhas Aulas - Mês Atual</h2>
+        <h2>Minhas Aulas</h2>
         <ul class="list-group" id="listaAulas">
           <li data-aula-id="1">
-            <span>
-              <strong>Aula 1</strong> - 12/02/2025, 14:00<br />
-              <small>Cabeleireiro 240h</small>
-            </span>
+            <div class="aula-info">
+              <strong class="aula-titulo">Aula 1</strong>
+              <div class="aula-detalhes">
+                <span class="aula-data">12/02/2025</span>
+                <span class="aula-hora">14:00</span>
+              </div>
+              <small class="aula-curso">Cabeleireiro 240h</small>
+            </div>
             <button class="btnDetalhes button">Detalhes</button>
           </li>
-
           <li data-aula-id="2">
-            <span>
-              <strong>Aula 2</strong> - 13/02/2025, 14:00<br />
-              <small>Cabeleireiro 240h</small>
-            </span>
+            <div class="aula-info">
+              <strong class="aula-titulo">Aula 2</strong>
+              <div class="aula-detalhes">
+                <span class="aula-data">13/02/2025</span>
+                <span class="aula-hora">14:00</span>
+              </div>
+              <small class="aula-curso">Cabeleireiro 240h</small>
+            </div>
             <button class="btnDetalhes button">Detalhes</button>
           </li>
         </ul>
-        <button id="btnVerCalendario" class="button">Ver Calendário</button>
-        <button id="btnInserirCodigoCurso" class="button">
-          Inserir código do curso
-        </button>
+        <div class="btn-group">
+          <button id="btnVerCalendario" class="button">Ver Calendário</button>
+          <button id="btnInserirCodigoCurso" class="button">Inserir código do curso</button>
+        </div>
       </div>
 
+      <!-- Calendário do Aluno -->
       <div id="alunoCalendarioScreen" class="card hidden">
         <h2>Calendário de Cursos e Presenças</h2>
         <div class="calendar">
           <div class="calendar-header">
             <span class="month-label" id="monthLabel"></span>
             <div class="calendar-nav">
-              <button id="prevMonth">Anterior</button>
-              <button id="btnCurrentMonth">Mês Atual</button>
-              <button id="nextMonth">Próximo</button>
+              <button id="prevMonth" class="button-small">Anterior</button>
+              <button id="btnCurrentMonth" class="button-small">Mês Atual</button>
+              <button id="nextMonth" class="button-small">Próximo</button>
             </div>
           </div>
           <div class="calendar-body" id="calendarBody"></div>
         </div>
-
-        <!-- Botão para confirmar todas as presenças do mês -->
         <button id="btnConfirmarPresencasMes" class="button">
           Confirmar Presenças do Mês
         </button>
 
-        <!-- Sheet para exibir o resumo e assinar -->
-        <div id="alunoConfirmSheet" class="aluno-sheet hidden">
+        <!-- Sheet de Confirmação de Presenças -->
+        <div id="alunoConfirmSheet" class="aluno-sheet">
           <div class="sheet-content">
-            <span id="closeAlunoSheet" class="close-sheet">&times;</span>
+            <button id="closeAlunoSheet" class="close-sheet" aria-label="Fechar">&times;</button>
             <h3>Resumo de Presenças</h3>
-            <div id="resumoPresencas">
-              <!-- Resumo será inserido via JS -->
-            </div>
+            <div id="resumoPresencas"></div>
             <button id="btnAssinarGov" class="button">Assinar com gov.br</button>
           </div>
         </div>
 
+        <!-- Timeline de Eventos -->
         <div id="timelineView" class="hidden">
-          <h2>
-            Timeline para <span id="timelineDateLabel"></span>
-          </h2>
+          <h2>Timeline para <span id="timelineDateLabel"></span></h2>
           <ul id="timelineList"></ul>
-          <button
-            id="btnVoltarTimeline"
-            class="button"
-            style="background:#ccc; color:#333;"
-          >
+          <button id="btnVoltarTimeline" class="button" style="background:#ccc; color:#333;">
             Voltar ao Calendário
           </button>
         </div>
-
-        <div class="legend">
-          <div class="legend-item">
-            <span class="color-box" style="background:#0052cc;"></span>
-            <span>Cabeleireiro 240h</span>
-          </div>
-          <div class="legend-item">
-            <span class="color-box" style="background:#ff5733;"></span>
-            <span>Curso X</span>
-          </div>
-          <div class="legend-item">
-            <span class="color-box" style="background:#28a745;"></span>
-            <span>Presença</span>
-          </div>
-          <div class="legend-item">
-            <span class="color-box" style="background:#dc3545;"></span>
-            <span>Falta</span>
-          </div>
-        </div>
-        <button
-          id="btnVoltarCalendario"
-          class="button"
-          style="background:#ccc; color:#333;"
-        >
+        <button id="btnVoltarCalendario" class="button" style="background:#ccc; color:#333;">
           Voltar
         </button>
       </div>
 
+      <!-- Detalhes da Aula -->
       <div id="alunoDetalhesScreen" class="card hidden">
         <h2>Detalhes da Aula</h2>
-        <p id="detalhesInfo">
-          Informações da aula selecionada aparecerão aqui.
-        </p>
-        <button id="btnConfirmarPresenca" class="button">
-          Confirmar Presença
-        </button>
-        <button
-          id="btnVoltarDashboard"
-          class="button"
-          style="background:#ccc; color:#333;"
-        >
-          Voltar
-        </button>
+        <p id="detalhesInfo">Informações da aula selecionada aparecerão aqui.</p>
+        <div class="btn-group">
+          <button id="btnConfirmarPresenca" class="button">Confirmar Presença</button>
+          <button id="btnVoltarDashboard" class="button" style="background:#ccc; color:#333;">
+            Voltar
+          </button>
+        </div>
       </div>
 
+      <!-- Feedback de Presença -->
       <div id="alunoFeedbackScreen" class="card hidden">
         <div class="alert">Presença confirmada com sucesso!</div>
         <button id="btnFecharFeedback" class="button">Fechar</button>
       </div>
 
+      <!-- Tela para Inserir Código do Curso -->
       <div id="alunoCodigoCursoScreen" class="card hidden">
         <h2>Entrar em Curso</h2>
-        <p>
-          Insira o código do curso fornecido pelo administrador:
-        </p>
-        <input
-          type="text"
-          id="codigoCurso"
-          class="input-field"
-          placeholder="Código do curso"
-        />
-        <button id="btnEntrarCurso" class="button">
-          Entrar no Curso
-        </button>
-        <button
-          id="btnVoltarDashboardCodigo"
-          class="button"
-          style="background:#ccc; color:#333;"
-        >
-          Voltar
-        </button>
+        <p>Insira o código do curso fornecido pelo administrador:</p>
+        <input type="text" id="codigoCurso" class="input-field" placeholder="Código do curso" />
+        <div class="btn-group">
+          <button id="btnEntrarCurso" class="button">Entrar no Curso</button>
+          <button id="btnVoltarDashboardCodigo" class="button" style="background:#ccc; color:#333;">
+            Voltar
+          </button>
+        </div>
       </div>
 
+      <!-- Tela de QR Code para Confirmação de Presença -->
       <div id="alunoQRCodeScreen" class="card hidden">
         <h2>Confirmação de Presença</h2>
-        <p>
-          Escaneie o QR Code exibido na aula para confirmar sua presença.
-        </p>
+        <p>Escaneie o QR Code exibido na aula para confirmar sua presença.</p>
         <img
           src="https://api.qrserver.com/v1/create-qr-code/?data=QR+Code+Exemplo&size=200x200"
           alt="QR Code"
-          style="display:block; margin:0 auto 1em;"
+          class="qr-code"
         />
-        <button id="btnSimularQRScan" class="button">
-          Simular Leitura do QR Code
-        </button>
-        <button
-          id="btnVoltarDetalhesQRCode"
-          class="button"
-          style="background:#ccc; color:#333;"
-        >
-          Voltar
-        </button>
+        <div class="btn-group">
+          <button id="btnSimularQRScan" class="button">Simular Leitura do QR Code</button>
+          <button id="btnVoltarDetalhesQRCode" class="button" style="background:#ccc; color:#333;">
+            Voltar
+          </button>
+        </div>
       </div>
     </section>
 
+    <!-- Seção do Painel Administrativo -->
     <section id="painelOperador" class="container hidden">
+      <!-- Tela de Login do Operador -->
       <div id="operadorLoginForm" class="card">
         <h2>Login - Painel Administrativo</h2>
         <p>Entre com suas credenciais</p>
@@ -203,54 +170,53 @@
         <button id="btnLoginOperador" class="button">Login</button>
       </div>
 
+      <!-- Dashboard do Operador -->
       <div id="operadorDashboard" class="card hidden">
         <div id="adminHamburgerContainer" class="admin-hamburger-container">
-          <div id="adminHamburger">&#9776;</div>
-          <div id="adminSidebarMenu" class="admin-sidebar">
-            <span id="closeSidebar" class="close-btn">&times;</span>
+          <button id="adminHamburger" class="button-hamburger" aria-label="Abrir menu">&#9776;</button>
+          <nav id="adminSidebarMenu" class="admin-sidebar">
+            <button id="closeSidebar" class="close-btn" aria-label="Fechar menu">&times;</button>
             <h3>Dashboards de Cursos</h3>
-            <a href="#" id="linkCurso1"
-              >Dashboard do Curso - Cabeleireiro 240h</a
-            >
-            <a href="#" id="linkCurso2"
-              >Dashboard do Curso - Curso X</a
-            >
-          </div>
+            <a href="#" id="linkCurso1">Dashboard do Curso - Cabeleireiro 240h</a>
+            <a href="#" id="linkCurso2">Dashboard do Curso - Curso X</a>
+          </nav>
         </div>
-
         <div id="adminSidebarOverlay" class="admin-sidebar-overlay"></div>
         <h2>Dashboard Administrativo</h2>
-        <p>Resumo do sistema:</p>
-        <ul>
-          <li>Total de Alunos: 120</li>
-          <li>Total de Cursos: 4</li>
-          <li>Aulas deste Mês: 20</li>
-        </ul>
-        <div style="margin-top:1em;">
-          <button id="btnVerCursos" class="button">
-            Gerenciar Cursos
-          </button>
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <h3>Total de Alunos</h3>
+            <p class="metric-value">120</p>
+          </div>
+          <div class="metric-card">
+            <h3>Total de Cursos</h3>
+            <p class="metric-value">4</p>
+          </div>
+          <div class="metric-card">
+            <h3>Aulas deste Mês</h3>
+            <p class="metric-value">20</p>
+          </div>
+        </div>
+        <div class="btn-group">
+          <button id="btnVerCursos" class="button">Gerenciar Cursos</button>
+          <button id="btnCadastrarAluno" class="button">Cadastrar Alunos</button>
         </div>
       </div>
 
+      <!-- Tela de Gerenciamento de Cursos -->
       <div id="operadorCursos" class="card hidden">
         <h2>Gerenciamento de Cursos</h2>
         <form id="formCurso">
           <label for="nomeCurso">Nome do Curso</label>
-          <input
-            type="text"
-            id="nomeCurso"
-            class="input-field"
-            placeholder="Ex: Cabeleireiro"
-            required
-          />
+          <input type="text" id="nomeCurso" class="input-field" placeholder="Ex: Cabeleireiro" required />
+
           <label for="dataInicio">Data de Início</label>
           <input type="date" id="dataInicio" class="input-field" required />
+
           <label for="dataFim">Data de Término</label>
           <input type="date" id="dataFim" class="input-field" required />
-          <label>
-            Selecione os dias da semana e defina o turno
-          </label>
+
+          <label>Selecione os dias da semana e defina o turno</label>
           <div class="dias-grid">
             <div class="dia-card" data-dia="Seg">
               <span>Seg</span>
@@ -304,73 +270,42 @@
             </div>
           </div>
           <label for="horasPorAula">Horas por Aula</label>
-          <input
-            type="number"
-            id="horasPorAula"
-            class="input-field"
-            min="1"
-            max="8"
-            value="2"
-            required
-          />
-          <label for="cargaHorariaTotal">
-            Carga Horária Total do Curso
-          </label>
-          <input
-            type="text"
-            id="cargaHorariaTotal"
-            class="input-field"
-            readonly
-          />
-          <button type="button" class="button" onclick="salvarCurso()">
-            Salvar Curso
-          </button>
-          <button
-            type="button"
-            id="btnVoltarDashboardOperador1"
-            class="button"
-            style="background:#ccc; color:#333;"
-          >
-            Voltar
-          </button>
+          <input type="number" id="horasPorAula" class="input-field" min="1" max="8" value="2" required />
+          <label for="cargaHorariaTotal">Carga Horária Total do Curso</label>
+          <input type="text" id="cargaHorariaTotal" class="input-field" readonly />
+          <div class="btn-group">
+            <button type="button" class="button" onclick="salvarCurso()">Salvar Curso</button>
+            <button type="button" id="btnVoltarDashboardOperador1" class="button" style="background:#ccc; color:#333;">
+              Voltar
+            </button>
+          </div>
         </form>
       </div>
 
+      <!-- Dashboard do Curso -->
       <div id="operadorDashboardCurso" class="card hidden">
         <h2>Dashboard do Curso</h2>
         <div class="course-code-container">
-          Código do Curso:
-          <span id="courseCodeDisplay" class="course-code"></span>
+          Código do Curso: <span id="courseCodeDisplay" class="course-code"></span>
         </div>
         <nav class="nav-tabs-course">
-          <button id="tabRegistroChamada" class="active">
-            Registro de Chamada
-          </button>
-          <button id="tabDiarioCurso">
-            Visualizar Diário
-          </button>
+          <button id="tabRegistroChamada" class="active">Registro de Chamada</button>
+          <button id="tabDiarioCurso">Visualizar Diário</button>
         </nav>
         <div id="contentRegistroChamada" class="course-content">
           <div id="adminCalendarContainer">
-            <div
-              class="admin-calendar-header"
-              style="text-align: center; margin-bottom: 10px;"
-            >
+            <div class="admin-calendar-header">
               <span class="month-label" id="adminMonthLabel"></span>
-              <div
-                class="calendar-nav"
-                style="display: flex; justify-content: center; gap: 10px; margin-top: 5px;"
-              >
-                <button id="adminPrevMonth">Anterior</button>
-                <button id="adminCurrentMonth">Mês Atual</button>
-                <button id="adminNextMonth">Próximo</button>
+              <div class="calendar-nav">
+                <button id="adminPrevMonth" class="button-small">Anterior</button>
+                <button id="adminCurrentMonth" class="button-small">Mês Atual</button>
+                <button id="adminNextMonth" class="button-small">Próximo</button>
               </div>
             </div>
             <div id="adminCalendar"></div>
           </div>
           <div id="adminClassDetails" class="hidden"></div>
         </div>
-
         <div id="contentDiarioCurso" class="course-content hidden">
           <h3>Diário do Curso</h3>
           <table class="diario-table">
@@ -398,27 +333,52 @@
             </tbody>
           </table>
         </div>
-        <button
-          id="btnVoltarDashboardCurso"
-          class="button"
-          style="background:#ccc; color:#333;"
-        >
+        <button id="btnVoltarDashboardCurso" class="button" style="background:#ccc; color:#333;">
           Voltar
         </button>
       </div>
+
+      <!-- Sheet do Operador para QR Code -->
+      <div id="adminClassSheet" class="admin-sheet">
+        <div class="sheet-content">
+          <button id="closeSheet" class="close-sheet" aria-label="Fechar">&times;</button>
+          <h3 id="sheetClassLabel"></h3>
+          <p id="sheetClassDateTime"></p>
+          <div id="sheetQRCodeContainer"></div>
+          <button id="sheetRegenerateQRCode" class="button">Gerar QR Code Novamente</button>
+        </div>
+      </div>
+
+      <!-- Tela de Cadastro de Alunos -->
+      <div id="operadorCadastrarAluno" class="card hidden">
+        <h2>Cadastrar Alunos</h2>
+        <form id="formCadastrarAluno">
+          <label for="nomeAluno">Nome</label>
+          <input type="text" id="nomeAluno" class="input-field" placeholder="Nome completo" required />
+
+          <label for="emailAluno">Email</label>
+          <input type="email" id="emailAluno" class="input-field" placeholder="email@exemplo.com" required />
+
+          <label for="cpfAluno">CPF</label>
+          <input type="text" id="cpfAluno" class="input-field" placeholder="000.000.000-00" required />
+
+          <label for="cursoAluno">Curso</label>
+          <input type="text" id="cursoAluno" class="input-field" placeholder="Curso" required />
+
+          <label for="dataNascimentoAluno">Data de Nascimento</label>
+          <input type="date" id="dataNascimentoAluno" class="input-field" required />
+
+          <div class="btn-group">
+            <button type="submit" class="button">Cadastrar Alunos</button>
+            <button type="button" id="btnVoltarDashboardAluno" class="button" style="background:#ccc; color:#333;">
+              Voltar
+            </button>
+          </div>
+        </form>
+      </div>
     </section>
 
-    <div id="adminClassSheet" class="admin-sheet hidden">
-      <div class="sheet-content">
-        <span id="closeSheet" class="close-sheet">&times;</span>
-        <h3 id="sheetClassLabel"></h3>
-        <p id="sheetClassDateTime"></p>
-        <div id="sheetQRCodeContainer"></div>
-        <button id="sheetRegenerateQRCode" class="button">
-          Gerar QR Code Novamente
-        </button>
-      </div>
-    </div>
+    <!-- Scripts -->
     <script src="index.js"></script>
   </body>
 </html>

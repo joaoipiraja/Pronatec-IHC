@@ -1,3 +1,6 @@
+/* ======================================================
+   Reset & Configurações Globais
+====================================================== */
 * {
   margin: 0;
   padding: 0;
@@ -9,19 +12,29 @@ body {
   color: #333;
   line-height: 1.6;
 }
+
+/* ======================================================
+   Cabeçalho
+====================================================== */
 header {
   background: linear-gradient(90deg, #0052cc, #003d99);
   color: #fff;
   padding: 1.5em 1em;
   text-align: center;
 }
-/* Nav Tabs para alternar entre App Aluno e Painel Administrativo */
-.nav-tabs {
+
+/* ======================================================
+   Navegação
+====================================================== */
+.nav-tabs,
+.nav-tabs-course {
   display: flex;
-  background: #fff;
   border-bottom: 1px solid #ccc;
+  background: #fff;
+  margin-bottom: 1em;
 }
-.nav-tabs button {
+.nav-tabs button,
+.nav-tabs-course button {
   flex: 1;
   padding: 1em;
   background: #eee;
@@ -29,37 +42,21 @@ header {
   cursor: pointer;
   transition: background 0.3s, border-bottom 0.3s;
 }
-.nav-tabs button.active {
-  background: #fff;
-  border-bottom: 3px solid #0052cc;
-  font-weight: bold;
-}
-/* Abas internas do dashboard de curso */
-.nav-tabs-course {
-  display: flex;
-  border-bottom: 1px solid #ccc;
-  margin-bottom: 1em;
-}
-.nav-tabs-course button {
-  flex: 1;
-  padding: 0.5em;
-  background: #eee;
-  border: none;
-  cursor: pointer;
-  transition: background 0.3s, border-bottom 0.3s;
-}
+.nav-tabs button.active,
 .nav-tabs-course button.active {
   background: #fff;
   border-bottom: 3px solid #0052cc;
   font-weight: bold;
 }
-/* Container principal */
+
+/* ======================================================
+   Container & Cards
+====================================================== */
 .container {
   max-width: 800px;
   margin: 1em auto;
   padding: 0 1em;
 }
-/* Cartões (cards) */
 .card {
   background: #fff;
   padding: 1.5em;
@@ -74,37 +71,55 @@ header {
 .hidden {
   display: none;
 }
-/* Botões */
+
+/* ======================================================
+   Botões e Inputs
+====================================================== */
 .button {
   display: inline-block;
   background: #0052cc;
   color: #fff;
-  padding: 0.75em 1.5em;
+  padding: 0.85em 1.5em;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.3s, transform 0.1s;
   text-decoration: none;
   margin: 0.5em 0;
 }
-.button:hover {
+.button:hover,
+.button:focus {
   background: #003d99;
+  transform: scale(1.02);
 }
-/* Campos de formulário */
+.button:active {
+  transform: scale(0.98);
+}
+.button-small {
+  padding: 0.5em 1em;
+  font-size: 0.9em;
+}
 .input-field,
 select,
 input[type="date"],
 input[type="number"] {
   width: 100%;
-  padding: 0.75em;
+  padding: 0.85em;
   margin: 0.5em 0;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
-/* Lista de aulas */
+.btn-group {
+  display: flex;
+  gap: 1em;
+  flex-wrap: wrap;
+}
+
+/* ======================================================
+   Listas, Alertas e Informações de Aula
+====================================================== */
 ul.list-group {
   list-style: none;
-  margin: 0;
   padding: 0;
 }
 ul.list-group li {
@@ -117,7 +132,6 @@ ul.list-group li {
 ul.list-group li:last-child {
   border-bottom: none;
 }
-/* Alert/Feedback */
 .alert {
   padding: 1em;
   background: #dff0d8;
@@ -126,67 +140,41 @@ ul.list-group li:last-child {
   margin: 1em 0;
   text-align: center;
 }
-/* Painel Administrativo - Gerenciamento de Cursos */
-.dias-grid {
+.aula-info {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: space-between;
-  margin-bottom: 1em;
+  flex-direction: column;
+  gap: 0.5em;
 }
-.dia-card {
-  flex: 1 1 calc(33.33% - 10px);
-  background: #eee;
-  text-align: center;
-  padding: 1em;
+.aula-detalhes {
+  display: flex;
+  gap: 1em;
+  font-size: 0.95em;
+  color: #555;
+}
+.aula-hora {
+  font-weight: bold;
+  color: #0052cc;
+  padding: 0.2em 0.4em;
+  border: 1px solid #0052cc;
   border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.3s, transform 0.2s;
-  user-select: none;
+  background-color: #e6f7ff;
 }
-.dia-card:hover {
-  transform: scale(1.02);
-}
-.dia-card.active {
-  background: #0052cc;
-  color: #fff;
-}
-.dia-card span {
-  font-size: 1.1em;
-  font-weight: 600;
-  display: block;
-  margin-bottom: 0.5em;
-}
-.dia-turno {
-  display: none;
-  margin-top: 0.5em;
-}
-.dia-card.active .dia-turno {
-  display: block;
-}
-.dia-turno select {
-  width: 100%;
-  padding: 0.4em;
-  font-size: 0.9em;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-#cargaHorariaTotal {
-  background: #f0f0f0;
-  border: 1px solid #ccc;
-  cursor: default;
-}
-/* Calendário do App Aluno e do Admin */
-.calendar, #adminCalendar {
+
+/* ======================================================
+   Calendários (Aluno e Admin)
+====================================================== */
+.calendar,
+#adminCalendar {
   margin: 1em 0;
   overflow-x: auto;
 }
-.calendar-header, .admin-calendar-header {
+.calendar-header,
+.admin-calendar-header {
   text-align: center;
   margin-bottom: 10px;
 }
 .month-label {
-  font-size: 1.4em;
+  font-size: 1.5em;
   font-weight: bold;
   display: block;
   margin-bottom: 5px;
@@ -195,12 +183,13 @@ ul.list-group li:last-child {
   display: flex;
   justify-content: center;
   gap: 10px;
+  margin-top: 0.5em;
 }
 .calendar-nav button {
   background: #0052cc;
   color: #fff;
   border: none;
-  padding: 5px 10px;
+  padding: 0.5em 1em;
   border-radius: 4px;
   cursor: pointer;
   transition: background 0.3s;
@@ -208,11 +197,15 @@ ul.list-group li:last-child {
 .calendar-nav button:hover {
   background: #003d99;
 }
-.calendar table, #adminCalendar table {
+.calendar table,
+#adminCalendar table {
   width: 100%;
   border-collapse: collapse;
 }
-.calendar th, .calendar td, #adminCalendar th, #adminCalendar td {
+.calendar th,
+.calendar td,
+#adminCalendar th,
+#adminCalendar td {
   border: 1px solid #ccc;
   width: 14.28%;
   height: 80px;
@@ -220,14 +213,18 @@ ul.list-group li:last-child {
   vertical-align: top;
   padding: 4px;
 }
-.calendar th, #adminCalendar th {
+.calendar th,
+#adminCalendar th {
   background: #f0f0f0;
 }
-/* Destaque para o dia atual no calendário do registro de chamada */
 #adminCalendar td.today {
   background-color: #e6f7ff;
   border: 2px solid #0052cc;
 }
+
+/* ======================================================
+   Badges e Legenda
+====================================================== */
 .course-badge {
   display: block;
   padding: 2px 4px;
@@ -282,7 +279,10 @@ ul.list-group li:last-child {
   margin-right: 8px;
   border-radius: 4px;
 }
-/* Diário do Curso */
+
+/* ======================================================
+   Diário do Curso
+====================================================== */
 .diario-table {
   width: 100%;
   border-collapse: collapse;
@@ -297,18 +297,75 @@ ul.list-group li:last-child {
 .diario-table th {
   background: #f0f0f0;
 }
-/* Menu Sanduíche (Hamburger) – Painel Administrativo */
+
+/* ======================================================
+   Gerenciamento de Cursos - Grid de Dias
+====================================================== */
+.dias-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+  margin-bottom: 1em;
+}
+.dia-card {
+  flex: 1 1 calc(33.33% - 10px);
+  background: #eee;
+  text-align: center;
+  padding: 1em;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  user-select: none;
+}
+.dia-card:hover {
+  transform: scale(1.02);
+}
+.dia-card.active {
+  background: #0052cc;
+  color: #fff;
+}
+.dia-card span {
+  font-size: 1.1em;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.5em;
+}
+.dia-turno {
+  display: none;
+  margin-top: 0.5em;
+}
+.dia-card.active .dia-turno {
+  display: block;
+}
+.dia-turno select {
+  width: 100%;
+  padding: 0.4em;
+  font-size: 0.9em;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+#cargaHorariaTotal {
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  cursor: default;
+}
+
+/* ======================================================
+   Sidebar & Hamburger (Painel Administrativo)
+====================================================== */
 .admin-hamburger-container {
   display: flex;
   align-items: center;
   margin-bottom: 1em;
 }
-.admin-hamburger-container #adminHamburger {
+.button-hamburger {
+  background: transparent;
+  border: none;
+  font-size: 1.8em;
   cursor: pointer;
-  font-size: 1.5em;
-  margin-right: 1em;
+  color: #0052cc;
 }
-/* Sidebar com animação e overlay */
 .admin-sidebar {
   position: fixed;
   top: 0;
@@ -326,10 +383,12 @@ ul.list-group li:last-child {
   transform: translateX(0);
 }
 .admin-sidebar .close-btn {
-  cursor: pointer;
-  font-size: 1.2em;
-  color: #dc3545;
+  background: transparent;
+  border: none;
   float: right;
+  cursor: pointer;
+  font-size: 1.5em;
+  color: #dc3545;
 }
 .admin-sidebar-overlay {
   position: fixed;
@@ -347,35 +406,10 @@ ul.list-group li:last-child {
   opacity: 1;
   visibility: visible;
 }
-/* ===============================
-   Estilo para o Sheet do Admin
-   =============================== */
-.admin-sheet {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: #fff;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
-  padding: 1em;
-  z-index: 1500;
-  transform: translateY(100%);
-  transition: transform 0.3s ease-in-out;
-}
-.admin-sheet.active {
-  transform: translateY(0);
-}
-.admin-sheet .close-sheet {
-  float: right;
-  cursor: pointer;
-  font-size: 1.5em;
-  color: #dc3545;
-}
-/* ===============================
-   Novos Estilos para o Dashboard do Curso
-   =============================== */
+
+/* ======================================================
+   Dashboard do Curso
+====================================================== */
 .course-code-container {
   text-align: center;
   margin: 1em 0 1.5em;
@@ -400,29 +434,85 @@ ul.list-group li:last-child {
   border-radius: 4px;
 }
 
-/* ===============================
-   Estilo para a sheet do aluno
-   =============================== */
-.aluno-sheet {
+/* ======================================================
+   Métricas do Dashboard Administrativo
+====================================================== */
+.metrics-grid {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-around;
+  margin: 1.5em 0;
+  flex-wrap: wrap;
+}
+.metric-card {
+  background: #f0f0f0;
+  border-radius: 8px;
+  flex: 1;
+  padding: 1em;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+  min-width: 200px;
+}
+.metric-card:hover {
+  transform: translateY(-5px);
+}
+.metric-card h3 {
+  margin-bottom: 0.5em;
+  font-size: 1.2em;
+  color: #0052cc;
+}
+.metric-value {
+  font-size: 2em;
+  font-weight: bold;
+  color: #333;
+}
+
+/* ======================================================
+   Sheets (Aluno & Admin) – Ancoradas na Borda Inferior
+====================================================== */
+.aluno-sheet,
+.admin-sheet {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: 2000;
   background: #fff;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
   padding: 1em;
-  z-index: 1500;
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
   transform: translateY(100%);
-  transition: transform 0.3s ease-in-out;
+  opacity: 0;
+  pointer-events: none;
 }
-.aluno-sheet.active {
+.aluno-sheet.active,
+.admin-sheet.active {
   transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
 }
-.aluno-sheet .close-sheet {
+.aluno-sheet .close-sheet,
+.admin-sheet .close-sheet {
+  background: transparent;
+  border: none;
   float: right;
   cursor: pointer;
   font-size: 1.5em;
   color: #dc3545;
+}
+
+/* ======================================================
+   Elementos Adicionais (QR Code, Countdown)
+====================================================== */
+.qr-code {
+  display: block;
+  max-width: 200px;
+  margin: 0 auto 1em;
+}
+.countdown {
+  font-weight: bold;
+  text-align: center;
 }
