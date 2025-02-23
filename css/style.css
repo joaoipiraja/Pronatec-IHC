@@ -1,16 +1,29 @@
 /* ======================================================
-   Reset & Configurações Globais
+   RESET BÁSICO (MANTENHA SEPARADO SE QUISER)
+   (arquivo reset.css já foi referenciado)
 ====================================================== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-body {
+
+/* ======================================================
+   Body, Fonte e Estruturas Globais
+====================================================== */
+html, body {
   font-family: 'Roboto', sans-serif;
   background-color: #f5f5f5;
   color: #333;
   line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+.hidden { 
+  display: none; 
+}
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden;
+  clip: rect(1px,1px,1px,1px);
+  white-space: nowrap;
 }
 
 /* ======================================================
@@ -24,16 +37,49 @@ header {
 }
 
 /* ======================================================
-   Navegação
+   Barra de Navegação (Abas) - agora destaque no topo
 ====================================================== */
-.nav-tabs,
+.nav-tabs {
+  display: flex;
+  /* Removido o margin-bottom para não criar espaço extra */
+  border-bottom: 1px solid #ccc;
+  background: #fff;
+}
+
+.nav-tabs button {
+  flex: 1;
+  padding: 1em;
+  background: #eee;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s, border-bottom 0.3s;
+  font-size: 1rem;
+}
+.nav-tabs button:hover {
+  background: #ddd;
+}
+.nav-tabs button.active {
+  background: #fff;
+  border-bottom: 3px solid #0052cc;
+  font-weight: bold;
+}
+
+/* Classe extra para destacar a nav no topo */
+.top-nav {
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  position: relative; /* Se quiser fixar, poderia usar position: sticky; top: 0; */
+  z-index: 999;
+}
+
+/* ======================================================
+   Abas de Curso
+====================================================== */
 .nav-tabs-course {
   display: flex;
   border-bottom: 1px solid #ccc;
   background: #fff;
   margin-bottom: 1em;
 }
-.nav-tabs button,
 .nav-tabs-course button {
   flex: 1;
   padding: 1em;
@@ -42,7 +88,9 @@ header {
   cursor: pointer;
   transition: background 0.3s, border-bottom 0.3s;
 }
-.nav-tabs button.active,
+.nav-tabs-course button:hover {
+  background: #ddd;
+}
 .nav-tabs-course button.active {
   background: #fff;
   border-bottom: 3px solid #0052cc;
@@ -50,7 +98,7 @@ header {
 }
 
 /* ======================================================
-   Container & Cards
+   Container e Cards
 ====================================================== */
 .container {
   max-width: 800px;
@@ -62,14 +110,11 @@ header {
   padding: 1.5em;
   margin-bottom: 1.5em;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
   transition: transform 0.3s;
 }
 .card:hover {
   transform: scale(1.01);
-}
-.hidden {
-  display: none;
 }
 
 /* ======================================================
@@ -83,9 +128,9 @@ header {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: background 0.3s, transform 0.1s;
-  text-decoration: none;
   margin: 0.5em 0;
+  text-decoration: none;
+  transition: background 0.3s, transform 0.1s;
 }
 .button:hover,
 .button:focus {
@@ -99,6 +144,23 @@ header {
   padding: 0.5em 1em;
   font-size: 0.9em;
 }
+.secondary-button {
+  background-color: #f5f5f5;
+  color: #0052cc;
+  border: 2px solid #0052cc;
+  border-radius: 4px;
+  padding: 0.7em 1.2em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.secondary-button:hover {
+  background-color: #0052cc;
+  color: #fff;
+}
+
+
 .input-field,
 select,
 input[type="date"],
@@ -109,14 +171,28 @@ input[type="number"] {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
-.btn-group {
-  display: flex;
-  gap: 1em;
-  flex-wrap: wrap;
+.input-field:focus,
+select:focus {
+  outline: 2px solid #0052cc;
 }
 
 /* ======================================================
-   Listas, Alertas e Informações de Aula
+   Barra de Navegação Interna (navbar)
+====================================================== */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1em;
+}
+.navbar-left,
+.navbar-right {
+  display: flex;
+  gap: 0.5em;
+}
+
+/* ======================================================
+   Listas, Alertas, e Detalhes de Aulas
 ====================================================== */
 ul.list-group {
   list-style: none;
@@ -128,9 +204,6 @@ ul.list-group li {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-ul.list-group li:last-child {
-  border-bottom: none;
 }
 .alert {
   padding: 1em;
@@ -161,7 +234,7 @@ ul.list-group li:last-child {
 }
 
 /* ======================================================
-   Calendários (Aluno e Admin)
+   Calendários
 ====================================================== */
 .calendar,
 #adminCalendar {
@@ -223,7 +296,7 @@ ul.list-group li:last-child {
 }
 
 /* ======================================================
-   Badges e Legenda
+   Badges e Indicadores
 ====================================================== */
 .course-badge {
   display: block;
@@ -237,10 +310,10 @@ ul.list-group li:last-child {
   display: inline-block;
   padding: 2px 4px;
   margin-top: 2px;
+  margin-left: 2px;
   font-size: 0.8em;
   color: #fff;
   border-radius: 4px;
-  margin-left: 2px;
 }
 .presence-badge {
   background: #28a745;
@@ -257,27 +330,6 @@ ul.list-group li:last-child {
   border-radius: 4px;
   margin-top: 2px;
   cursor: pointer;
-}
-.legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  padding: 10px;
-  background-color: #f9f9f9;
-  border-radius: 5px;
-  margin-top: 10px;
-}
-.legend-item {
-  display: flex;
-  align-items: center;
-  font-size: 0.9em;
-}
-.legend-item .color-box {
-  width: 20px;
-  height: 20px;
-  display: inline-block;
-  margin-right: 8px;
-  border-radius: 4px;
 }
 
 /* ======================================================
@@ -317,9 +369,11 @@ ul.list-group li:last-child {
   cursor: pointer;
   transition: background 0.3s, transform 0.2s;
   user-select: none;
+  min-width: 100px;
 }
 .dia-card:hover {
   transform: scale(1.02);
+  background: #ddd;
 }
 .dia-card.active {
   background: #0052cc;
@@ -352,7 +406,7 @@ ul.list-group li:last-child {
 }
 
 /* ======================================================
-   Sidebar & Hamburger (Painel Administrativo)
+   Sidebar (Menu Lateral) - Admin
 ====================================================== */
 .admin-hamburger-container {
   display: flex;
@@ -368,12 +422,12 @@ ul.list-group li:last-child {
 }
 .admin-sidebar {
   position: fixed;
-  top: 0;
+  top: 0; 
   left: 0;
-  width: 250px;
+  width: 250px; 
   height: 100%;
   background: #fff;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 2px 0 5px rgba(0,0,0,0.3);
   padding: 1em;
   z-index: 1000;
   transform: translateX(-100%);
@@ -392,11 +446,11 @@ ul.list-group li:last-child {
 }
 .admin-sidebar-overlay {
   position: fixed;
-  top: 0;
+  top: 0; 
   left: 0;
-  width: 100%;
+  width: 100%; 
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0,0,0,0.5);
   z-index: 900;
   opacity: 0;
   visibility: hidden;
@@ -435,7 +489,7 @@ ul.list-group li:last-child {
 }
 
 /* ======================================================
-   Métricas do Dashboard Administrativo
+   Métricas (Dashboard Admin)
 ====================================================== */
 .metrics-grid {
   display: flex;
@@ -469,13 +523,14 @@ ul.list-group li:last-child {
 }
 
 /* ======================================================
-   Sheets (Aluno & Admin) – Ancoradas na Borda Inferior
+   Sheets (Aluno & Admin)
+   Exibidas na borda inferior
 ====================================================== */
 .aluno-sheet,
 .admin-sheet {
   position: fixed;
-  left: 0;
-  right: 0;
+  left: 0; 
+  right: 0; 
   bottom: 0;
   z-index: 2000;
   background: #fff;
@@ -505,7 +560,7 @@ ul.list-group li:last-child {
 }
 
 /* ======================================================
-   Elementos Adicionais (QR Code, Countdown)
+   QR Code e Countdown
 ====================================================== */
 .qr-code {
   display: block;
